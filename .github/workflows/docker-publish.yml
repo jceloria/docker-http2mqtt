@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    # Publish `master` as Docker `${TAG}` image.
+    # Publish `master` as Docker `latest` image.
     branches:
       - master
 
@@ -15,7 +15,6 @@ on:
 
 env:
   IMAGE_NAME: http2mqtt
-  TAG: "latest"
 
 jobs:
   # Run tests.
@@ -28,11 +27,19 @@ jobs:
 
       - name: Run tests
         run: |
-          docker build . --file Dockerfile -t ${IMAGE_NAME}
+          if [ -f docker-compose.test.yml ]; then
+            docker-compose --file docker-compose.test.yml build
+            docker-compose --file docker-compose.test.yml run sut
+          else
+            docker build . --file Dockerfile -t ${IMAGE_NAME}
+          fi
 
 
   # See also https://docs.docker.com/docker-hub/builds/
   push:
+    # Ensure test job passes before pushing image.
+    needs: test
+
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
@@ -47,23 +54,26 @@ jobs:
 
       - name: Push image
         run: |
+          REPO_NAME=${{ github.repository }}
+          IMAGE_ID=${REPO_NAME%%/*}/${IMAGE_NAME}
+
           # Change all uppercase to lowercase
-          IMAGE_ID=$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]')
+          IMAGE_ID=$(echo ${IMAGE_ID} | tr '[A-Z]' '[a-z]')
 
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
           # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo ${VERSION} | sed -e 's/^v//')
 
           # Use Docker tag convention
-          [ "$VERSION" == "master" ] && VERSION="$TAG"
+          [ "${VERSION}" == "master" ] && VERSION="latest"
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
+          echo IMAGE_ID=${IMAGE_ID}
+          echo VERSION=${VERSION}
 
-          docker tag ${IMAGE_NAME} $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker tag ${IMAGE_NAME} ${IMAGE_ID}:${VERSION}
+          docker push ${IMAGE_ID}:${VERSION}
 
-          docker tag ${IMAGE_NAME} $IMAGE_ID:latest
-          docker push $IMAGE_ID:latest
+          docker tag ${IMAGE_NAME} ${IMAGE_ID}:latest
+          docker push ${IMAGE_ID}:latest
