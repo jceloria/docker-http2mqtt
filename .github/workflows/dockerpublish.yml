@@ -29,7 +29,6 @@ jobs:
       - name: Run tests
         run: |
           docker build . --file Dockerfile -t ${IMAGE_NAME}
-          docker run --rm --entrypoint /usr/local/bin/gunicorn --check-config main:app ${IMAGE_NAME}
 
 
   # See also https://docs.docker.com/docker-hub/builds/
