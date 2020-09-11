@@ -35,4 +35,4 @@ $─► curl 'http://localhost:8000/?device=a1:b2:c3:d4:e5:f6&message=office'
 {"message":"office","topic":"location/a1:b2:c3:d4:e5:f6/state"}
 ```
 
-![Docker](https://github.com/jceloria/docker-alpine-ripper/workflows/Docker/badge.svg)
+![Docker](https://github.com/jceloria/docker-http2mqtt/workflows/Docker/badge.svg)
