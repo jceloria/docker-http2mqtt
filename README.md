@@ -5,7 +5,20 @@ The main reason I wrote this is because I wanted to use Macrodroid to interact w
 
 ##### docker-compose:
 ```
+version: "3.7"
+
+volumes:
+  mqttdata:
+
 services:
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+    - 18833:1883
+    volumes:
+    - /opt/data/mqtt/mosquitto/config:/mosquitto/config
+    - mqttdata:/mosquitto/data
+
   http2mqtt:
     image: jceloria/http2mqtt
     environment:
@@ -14,6 +27,12 @@ services:
     - BASE_TOPIC=location
     ports:
     - 8000:8000
+```
+
+##### example:
+```
+$─► curl 'http://localhost:8000/?device=a1:b2:c3:d4:e5:f6&message=office'
+{"message":"office","topic":"location/a1:b2:c3:d4:e5:f6/state"}
 ```
 
 ![Docker](https://github.com/jceloria/docker-alpine-ripper/workflows/Docker/badge.svg)
