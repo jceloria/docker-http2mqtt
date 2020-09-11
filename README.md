@@ -3,5 +3,17 @@
 You most likely don't want to use this, there is no security in place and it was whipped together haphazardly.
 The main reason I wrote this is because I wanted to use Macrodroid to interact with bluetooth beacons and publish state to a local message broker for home automation stuff. I didn't want to use Tasker and the MQTT Publish plugin as they have both become extremely unreliable.
 
+##### docker-compose:
+```
+services:
+  http2mqtt:
+    image: jceloria/http2mqtt
+    environment:
+    - MQTT_HOST=mosquitto
+    - MQTT_PORT=18833
+    - BASE_TOPIC=location
+    ports:
+    - 8000:8000
+```
 
 ![Docker](https://github.com/jceloria/docker-alpine-ripper/workflows/Docker/badge.svg)
