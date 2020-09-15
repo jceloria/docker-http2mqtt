@@ -22,13 +22,14 @@ def http2mqtt():
 
     try:
         base_topic = os.environ.get('BASE_TOPIC').strip('/')
-        topic = '{}/{}/state'.format(base_topic, request.args.get('dev'))
+        dev = request.args.get('dev')
         batt = request.args.get('batt')
         lat = request.args.get('lat')
         lon = request.args.get('lon')
         acc = request.args.get('acc')
+        topic = '{}/{}/state'.format(base_topic, dev)
+        app.logger.info('{}, {}, {}, {}, {}'.format(dev, batt, lat, lon, acc))
         payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
-        app.logger.info(payload)
         publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port))
     except Exception as e:
         print("Unable to publish message: {}".format(e))
