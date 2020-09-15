@@ -2,10 +2,17 @@
 
 from flask import Flask
 from flask import request
-import paho.mqtt.publish as publish
+import json
+import logging
 import os
+import paho.mqtt.publish as publish
 
 app = Flask(__name__)
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
 
 @app.route('/')
@@ -16,13 +23,18 @@ def http2mqtt():
     try:
         base_topic = os.environ.get('BASE_TOPIC').strip('/')
         topic = '{}/{}/state'.format(base_topic, request.args.get('device'))
-        message = request.args.get('message')
-        publish.single(topic, message, hostname=mqtt_host, port=int(mqtt_port))
-    except Exception:
-        print("Unable to publish message, ensure `BASE_TOPIC` environment variable is set")
+        batt = request.args.get('battery')
+        lat = request.args.get('latitude')
+        lon = request.args.get('longitude')
+        acc = request.args.get('accuracy')
+        payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
+        app.logger.info(payload)
+        publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port))
+    except Exception as e:
+        print("Unable to publish message: {}".format(e))
         pass
 
-    return dict(topic=topic, message=message)
+    return payload
 
 
 if __name__ == '__main__':
