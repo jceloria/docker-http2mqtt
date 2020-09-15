@@ -22,11 +22,11 @@ def http2mqtt():
 
     try:
         base_topic = os.environ.get('BASE_TOPIC').strip('/')
-        topic = '{}/{}/state'.format(base_topic, request.args.get('device'))
-        batt = request.args.get('battery')
-        lat = request.args.get('latitude')
-        lon = request.args.get('longitude')
-        acc = request.args.get('accuracy')
+        topic = '{}/{}/state'.format(base_topic, request.args.get('dev'))
+        batt = request.args.get('batt')
+        lat = request.args.get('lat')
+        lon = request.args.get('lon')
+        acc = request.args.get('acc')
         payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
         app.logger.info(payload)
         publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port))
