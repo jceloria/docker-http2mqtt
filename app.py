@@ -34,7 +34,7 @@ def http2mqtt():
         acc = request.args.get('acc')
         topic = '{}/{}/state'.format(base_topic, dev)
         app.logger.info('{}, {}, {}, {}, {}'.format(dev, batt, lat, lon, acc))
-        payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
+        payload = json.dumps(dict(battery_level=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
         publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port), retain=retain)
     except Exception as e:
         print('Unable to publish message: {}'.format(e))
