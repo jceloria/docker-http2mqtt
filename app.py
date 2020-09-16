@@ -30,7 +30,7 @@ def http2mqtt():
         topic = '{}/{}/state'.format(base_topic, dev)
         app.logger.info('{}, {}, {}, {}, {}'.format(dev, batt, lat, lon, acc))
         payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
-        publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port))
+        publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port), retain=True)
     except Exception as e:
         print("Unable to publish message: {}".format(e))
         pass
