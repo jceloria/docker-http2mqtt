@@ -15,6 +15,10 @@ if __name__ != '__main__':
     app.logger.setLevel(gunicorn_logger.level)
 
 
+def str2bool(v):
+    return str(v).lower() in ('yes', 'true', 'y', 't', '1')
+
+
 @app.route('/')
 def http2mqtt():
     mqtt_host = os.environ.get('MQTT_HOST', '127.0.0.1')
@@ -22,6 +26,7 @@ def http2mqtt():
 
     try:
         base_topic = os.environ.get('BASE_TOPIC').strip('/')
+        retain = str2bool(os.environ.get('RETAIN', '1'))
         dev = request.args.get('dev')
         batt = request.args.get('batt')
         lat = request.args.get('lat')
@@ -30,9 +35,9 @@ def http2mqtt():
         topic = '{}/{}/state'.format(base_topic, dev)
         app.logger.info('{}, {}, {}, {}, {}'.format(dev, batt, lat, lon, acc))
         payload = json.dumps(dict(battery=batt, latitude=lat, longitude=lon, gps_accuracy=acc))
-        publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port), retain=True)
+        publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port), retain=retain)
     except Exception as e:
-        print("Unable to publish message: {}".format(e))
+        print('Unable to publish message: {}'.format(e))
         pass
 
     return payload
