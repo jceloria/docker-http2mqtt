@@ -1,0 +1,7 @@
+*.*z
+*.log
+*.sw*
+*.zip
+.DS_Store
+._*
+__pycache__
