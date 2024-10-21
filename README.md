@@ -30,9 +30,9 @@ services:
 ```
 
 ##### example:
-The `id` parameter is the only requirement.
+The `device` parameter is the only requirement.
 ```
-$─► curl 'http://localhost:8000/?id=a1b2c3d4e5&latitude=-90.0000&longitude=-0.0000&gps_accuracy=90&battery_level=94'
+$─► curl 'http://localhost:8000/?device=a1b2c3d4e5&latitude=-90.0000&longitude=-0.0000&gps_accuracy=90&battery_level=94'
 {"latitude": -90.0, "longitude": -0.0, "gps_accuracy": 90.0, "battery_level": 94.0}
 ```
 
