@@ -14,7 +14,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: racadm
+  IMAGE_NAME: http2mqtt
 
 jobs:
   # Run tests.
