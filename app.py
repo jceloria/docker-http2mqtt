@@ -39,10 +39,9 @@ def http2mqtt():
     try:
         data = dict(request.args)
 
-        device = data.pop('device')
         payload = json.dumps({k: str2float(v) for k, v in data.items()})
 
-        topic = '{}/{}/state'.format(base_topic, device)
+        topic = '{}/{}/state'.format(base_topic, data.get('device'))
 
         app.logger.info('Publishing {} to topic {}.'.format(payload, topic))
         publish.single(topic, payload, hostname=mqtt_host, port=int(mqtt_port), retain=retain)
